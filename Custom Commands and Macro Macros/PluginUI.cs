@@ -10,7 +10,7 @@ namespace CCMM {
         private readonly CCMMPlugin plugin;
         private INode dragged = null;
         private Guid runningChoice = Guid.Empty;
-        private uint spawned = 0;
+        private bool showIdents = false;
 
         private bool _settingsVisible = false;
         public bool SettingsVisible { get => this._settingsVisible; set => this._settingsVisible = value; }
@@ -83,7 +83,17 @@ namespace CCMM {
                 ImGui.PushItemWidth(-1f);
                 if (ImGui.ListBoxHeader("##running-macros", this.plugin.MacroHandler.Running.Count, 5)) {
                     foreach (KeyValuePair<Guid, Macro> entry in this.plugin.MacroHandler.Running) {
-                        if (ImGui.Selectable($"{entry.Value.Name}##{entry.Key}", this.runningChoice == entry.Key)) {
+                        string name = $"{entry.Value.Name}";
+                        if (this.showIdents) {
+                            string ident = entry.Key.ToString();
+                            name += $" ({ident.Substring(ident.Length - 7)})";
+                        }
+                        if (this.plugin.MacroHandler.IsPaused(entry.Key)) {
+                            name += " (paused)";
+                        }
+                        bool cancalled = this.plugin.MacroHandler.IsCancelled(entry.Key);
+                        ImGuiSelectableFlags flags = cancalled ? ImGuiSelectableFlags.Disabled : ImGuiSelectableFlags.None;
+                        if (ImGui.Selectable($"{name}##{entry.Key}", this.runningChoice == entry.Key, flags)) {
                             this.runningChoice = entry.Key;
                         }
                     }
@@ -106,6 +116,10 @@ namespace CCMM {
                         this.plugin.MacroHandler.PauseMacro(this.runningChoice);
                     }
                 }
+
+                ImGui.SameLine();
+
+                ImGui.Checkbox("Show unique identifiers", ref this.showIdents);
 
                 ImGui.Columns(1);
 
