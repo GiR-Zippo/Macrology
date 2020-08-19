@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace CCMM {
     public class MacroHandler {
+        private bool ready = false;
         private readonly static Regex WAIT = new Regex(@"<wait\.(\d+(?:\.\d+)?)>", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         private readonly CCMMPlugin plugin;
@@ -19,6 +20,7 @@ namespace CCMM {
 
         public MacroHandler(CCMMPlugin plugin) {
             this.plugin = plugin ?? throw new ArgumentNullException(nameof(plugin), "CCMMPlugin cannot be null");
+            this.ready = this.plugin.Interface.ClientState.LocalPlayer != null;
         }
 
         private static string[] ExtractCommands(string macro) {
@@ -28,6 +30,10 @@ namespace CCMM {
         }
 
         public Guid SpawnMacro(Macro macro) {
+            if (!this.ready) {
+                return Guid.Empty;
+            }
+
             string[] commands = ExtractCommands(macro.Contents);
             Guid id = Guid.NewGuid();
             if (commands.Length == 0) {
@@ -87,9 +93,14 @@ namespace CCMM {
             return paused;
         }
 
+        public bool IsCancelled(Guid id) {
+            this.cancelled.TryGetValue(id, out bool cancelled);
+            return cancelled;
+        }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "delegate")]
         public void OnFrameworkUpdate(Framework framework) {
-            if (!this.commands.Reader.TryRead(out string command)) {
+            if (!this.commands.Reader.TryRead(out string command) || !this.ready) {
                 return;
             }
 
@@ -111,6 +122,18 @@ namespace CCMM {
             }
 
             return null;
+        }
+
+        internal void OnLogin(object sender, EventArgs args) {
+            this.ready = true;
+        }
+
+        internal void OnLogout(object sender, EventArgs args) {
+            this.ready = false;
+
+            foreach (Guid id in this.Running.Keys) {
+                this.CancelMacro(id);
+            }
         }
     }
 }

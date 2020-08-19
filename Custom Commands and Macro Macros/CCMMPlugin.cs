@@ -28,6 +28,8 @@ namespace CCMM {
             this.Interface.UiBuilder.OnBuildUi += this.Ui.Draw;
             this.Interface.UiBuilder.OnOpenConfigUi += this.Ui.OpenSettings;
             this.Interface.Framework.OnUpdateEvent += this.MacroHandler.OnFrameworkUpdate;
+            this.Interface.ClientState.OnLogin += this.MacroHandler.OnLogin;
+            this.Interface.ClientState.OnLogout += this.MacroHandler.OnLogout;
             foreach (KeyValuePair<string, string> entry in Commands.COMMANDS) {
                 this.Interface.CommandManager.AddHandler(entry.Key, new CommandInfo(this.Commands.OnCommand) {
                     HelpMessage = entry.Value,
@@ -41,6 +43,8 @@ namespace CCMM {
                     this.Interface.UiBuilder.OnBuildUi -= this.Ui.Draw;
                     this.Interface.UiBuilder.OnOpenConfigUi -= this.Ui.OpenSettings;
                     this.Interface.Framework.OnUpdateEvent -= this.MacroHandler.OnFrameworkUpdate;
+                    this.Interface.ClientState.OnLogin -= this.MacroHandler.OnLogin;
+                    this.Interface.ClientState.OnLogout -= this.MacroHandler.OnLogout;
                     foreach (string command in Commands.COMMANDS.Keys) {
                         this.Interface.CommandManager.RemoveHandler(command);
                     }
