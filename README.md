@@ -54,3 +54,9 @@ run two or more macros, and they'll run in parallel.
 
 When using `<wait.#>` in a macro, you can use decimal points, like
 `<wait.2.5>`.
+
+## Known issues
+
+- Custom commands are not implemented.
+- There is no way good way to reorder macros.
+- There is no way to take a macro out of a folder (i.e. put it back at the root).
