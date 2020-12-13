@@ -7,9 +7,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace CCMM {
+namespace Macrology {
     public class Configuration : IPluginConfiguration {
-        private CCMMPlugin plugin;
+        private Macrology Plugin { get; set; } = null!;
 
         public int Version { get; set; } = 1;
 
@@ -19,17 +19,17 @@ namespace CCMM {
 
         public int MaxLength { get; set; } = 10_000;
 
-        internal void Initialise(CCMMPlugin plugin) {
-            this.plugin = plugin ?? throw new ArgumentNullException(nameof(plugin), "CCMMPlugin cannot be null");
+        internal void Initialise(Macrology plugin) {
+            this.Plugin = plugin ?? throw new ArgumentNullException(nameof(plugin), "Macrology cannot be null");
         }
 
         internal void Save() {
-            string configPath = ConfigPath(plugin);
-            string configText = JsonConvert.SerializeObject(this, Formatting.Indented);
+            var configPath = ConfigPath(this.Plugin);
+            var configText = JsonConvert.SerializeObject(this, Formatting.Indented);
             File.WriteAllText(configPath, configText);
         }
 
-        private static string ConfigPath(CCMMPlugin plugin) {
+        private static string ConfigPath(Macrology plugin) {
             string[] paths = {
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                 "XIVLauncher",
@@ -39,19 +39,23 @@ namespace CCMM {
             return Path.Combine(paths);
         }
 
-        internal static Configuration Load(CCMMPlugin plugin) {
-            string configPath = ConfigPath(plugin);
-            if (File.Exists(configPath)) {
-                string configText;
-                try {
-                    configText = File.ReadAllText(configPath);
-                } catch (IOException e) {
-                    PluginLog.Log($"Could not read config at {configPath}: {e.Message}.");
-                    return null;
-                }
-                return JsonConvert.DeserializeObject<Configuration>(configText);
+        internal static Configuration? Load(Macrology plugin) {
+            var configPath = ConfigPath(plugin);
+
+            if (!File.Exists(configPath)) {
+                return new Configuration();
             }
-            return new Configuration();
+
+            string configText;
+            try {
+                configText = File.ReadAllText(configPath);
+            }
+            catch (IOException e) {
+                PluginLog.Log($"Could not read config at {configPath}: {e.Message}.");
+                return null;
+            }
+
+            return JsonConvert.DeserializeObject<Configuration>(configText);
         }
 
         private static IEnumerable<T> Traverse<T>(T item, Func<T, IEnumerable<T>> childSelector) {
@@ -60,20 +64,14 @@ namespace CCMM {
             while (stack.Any()) {
                 var next = stack.Pop();
                 yield return next;
-                foreach (var child in childSelector(next))
+                foreach (var child in childSelector(next)) {
                     stack.Push(child);
+                }
             }
         }
 
-        public Macro FindMacro(Guid id) {
-            foreach (INode node in this.Nodes) {
-                Macro macro = (Macro)Traverse(node, n => n.Children).FirstOrDefault(n => n.Id == id && n is Macro);
-                if (macro != null) {
-                    return macro;
-                }
-            }
-
-            return null;
+        public Macro? FindMacro(Guid id) {
+            return this.Nodes.Select(node => (Macro?) Traverse(node, n => n.Children).FirstOrDefault(n => n.Id == id && n is Macro)).FirstOrDefault(macro => macro != null);
         }
     }
 
@@ -90,7 +88,7 @@ namespace CCMM {
         public string Name { get; set; }
         public List<INode> Children { get; private set; } = new List<INode>();
 
-        public Folder(string name, List<INode> children = null) {
+        public Folder(string name, List<INode>? children = null) {
             this.Id = Guid.NewGuid();
             this.Name = name;
             if (children != null) {
@@ -139,18 +137,20 @@ namespace CCMM {
     public class NodeConverter : JsonConverter {
         public override bool CanWrite => false;
         public override bool CanRead => true;
+
         public override bool CanConvert(Type objectType) {
             return objectType == typeof(INode);
         }
+
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) {
             throw new InvalidOperationException("Use default serialization.");
         }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer) {
-            JArray jsonArray = JArray.Load(reader);
-            List<INode> list = new List<INode>();
-            foreach (JToken token in jsonArray) {
-                JObject jsonObject = (JObject)token;
+        public override object ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer) {
+            var jsonArray = JArray.Load(reader);
+            var list = new List<INode>();
+            foreach (var token in jsonArray) {
+                var jsonObject = (JObject) token;
                 INode node;
                 if (jsonObject.ContainsKey("Contents")) {
                     node = new Macro(
@@ -158,15 +158,18 @@ namespace CCMM {
                         jsonObject["Name"].ToObject<string>(),
                         jsonObject["Contents"].ToObject<string>()
                     );
-                } else {
+                }
+                else {
                     node = new Folder(
                         jsonObject["Id"].ToObject<Guid>(),
                         jsonObject["Name"].ToObject<string>(),
-                        (List<INode>)this.ReadJson(jsonObject["Children"].CreateReader(), typeof(List<INode>), null, serializer)
+                        (List<INode>) this.ReadJson(jsonObject["Children"].CreateReader(), typeof(List<INode>), null, serializer)
                     );
                 }
+
                 list.Add(node);
             }
+
             return list;
         }
     }

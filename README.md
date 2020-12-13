@@ -1,19 +1,13 @@
-# Custom Commands and Macro Macros
+# Macrology
 
 **This plugin is still under heavy development and is not
 stable. Proceed with caution.**
 
 ## Description
 
-This command allows you to create custom commands (not yet
-implemented) and unrestricted macros.
+This command allows you to create better and unrestricted macros.
 
-**Custom commands** are commands that run a specific macro. For
-example, you could bind `/h` to `/tp Estate Hall (Free Company)`, or
-even multiple commands in sequence. In order to do this, you need...
-
-**Macro macros** are like normal macros but different. Unlike normal
-macros, you can't assign them to hotbar buttons (yet?), but you can
+Unlike normal macros, you can't assign them to hotbar buttons (yet?), but you can
 execute them using commands (and custom commands), run multiple at the
 same time, pause them, make them loop, use `<wait.X>` with fractional
 seconds, and, of course, make them as long as you please (the *macro*
@@ -24,7 +18,7 @@ for easier access.
 
 ## Commands
 
-- `/ccmm` - opens the main interface
+- `/mmacros` - opens the main interface
 - `/mmacro <uuid>` - executes the macro with the given UUID
 - `/mmcancel <all|uuid>` - either cancels all currently-running macros
   or cancels the first instance of the macro represented by the given
@@ -57,6 +51,5 @@ When using `<wait.#>` in a macro, you can use decimal points, like
 
 ## Known issues
 
-- Custom commands are not implemented.
 - There is no way good way to reorder macros.
 - There is no way to take a macro out of a folder (i.e. put it back at the root).
