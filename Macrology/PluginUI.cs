@@ -82,7 +82,7 @@ namespace Macrology {
 
             ImGui.Text("Running macros");
             ImGui.PushItemWidth(-1f);
-            if (ImGui.ListBoxHeader("##running-macros", this.Plugin.MacroHandler.Running.Count, 5)) {
+            if (ImGui.BeginListBox("##running-macros")) {
                 foreach (var entry in this.Plugin.MacroHandler.Running) {
                     var name = $"{entry.Value.Name}";
                     if (this._showIdents) {
@@ -101,7 +101,7 @@ namespace Macrology {
                     }
                 }
 
-                ImGui.ListBoxFooter();
+                ImGui.EndListBox();
             }
 
             ImGui.PopItemWidth();
@@ -116,8 +116,7 @@ namespace Macrology {
             if (ImGui.Button(paused ? "Resume" : "Pause") && this.RunningChoice != Guid.Empty) {
                 if (paused) {
                     this.Plugin.MacroHandler.ResumeMacro(this.RunningChoice);
-                }
-                else {
+                } else {
                     this.Plugin.MacroHandler.PauseMacro(this.RunningChoice);
                 }
             }
@@ -194,8 +193,7 @@ namespace Macrology {
             if (open) {
                 if (node is Macro macro) {
                     this.DrawMacro(macro);
-                }
-                else if (node is Folder folder) {
+                } else if (node is Folder folder) {
                     this.DrawFolder(folder);
                     foreach (var child in node.Children) {
                         toRemove.AddRange(this.DrawNode(child));
