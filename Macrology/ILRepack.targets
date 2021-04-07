@@ -11,7 +11,7 @@
                 InputAssemblies="@(InputAssemblies)"
                 TargetKind="Dll"
                 TargetPlatformVersion="v4"
-                LibraryPath="$(OutputPath)"
+                LibraryPath="$(OutputPath);$(AppData)\XIVLauncher\addon\Hooks\dev"
                 OutputFile="$(OutputPath)\$(AssemblyName).dll"/>
     </Target>
 </Project>

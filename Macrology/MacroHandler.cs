@@ -1,6 +1,7 @@
 ﻿using Dalamud.Game.Internal;
 using System;
 using System.Collections.Concurrent;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Channels;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 namespace Macrology {
     public class MacroHandler {
         private bool _ready;
-        private static readonly Regex Wait = new Regex(@"<wait\.(\d+(?:\.\d+)?)>", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private static readonly Regex Wait = new(@"<wait\.(\d+(?:\.\d+)?)>", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         private static readonly string[] FastCommands = {
             "/ac",
@@ -20,9 +21,9 @@ namespace Macrology {
 
         private Macrology Plugin { get; }
         private readonly Channel<string> _commands = Channel.CreateUnbounded<string>();
-        public ConcurrentDictionary<Guid, Macro> Running { get; } = new ConcurrentDictionary<Guid, Macro>();
-        private readonly ConcurrentDictionary<Guid, bool> _cancelled = new ConcurrentDictionary<Guid, bool>();
-        private readonly ConcurrentDictionary<Guid, bool> _paused = new ConcurrentDictionary<Guid, bool>();
+        public ConcurrentDictionary<Guid, Macro> Running { get; } = new();
+        private readonly ConcurrentDictionary<Guid, bool> _cancelled = new();
+        private readonly ConcurrentDictionary<Guid, bool> _paused = new();
 
         public MacroHandler(Macrology plugin) {
             this.Plugin = plugin ?? throw new ArgumentNullException(nameof(plugin), "Macrology cannot be null");
@@ -155,7 +156,7 @@ namespace Macrology {
             var match = matches[matches.Count - 1];
             var waitTime = match.Groups[1].Captures[0].Value;
 
-            if (!double.TryParse(waitTime, out var seconds)) {
+            if (!double.TryParse(waitTime, NumberStyles.Number, CultureInfo.InvariantCulture, out var seconds)) {
                 return null;
             }
 

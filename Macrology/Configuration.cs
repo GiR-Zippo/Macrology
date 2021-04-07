@@ -15,7 +15,7 @@ namespace Macrology {
 
         [JsonProperty]
         [JsonConverter(typeof(NodeConverter))]
-        public List<INode> Nodes { get; private set; } = new List<INode>();
+        public List<INode> Nodes { get; private set; } = new();
 
         public int MaxLength { get; set; } = 10_000;
 
@@ -86,7 +86,7 @@ namespace Macrology {
     public class Folder : INode {
         public Guid Id { get; set; }
         public string Name { get; set; }
-        public List<INode> Children { get; private set; } = new List<INode>();
+        public List<INode> Children { get; private set; } = new();
 
         public Folder(string name, List<INode>? children = null) {
             this.Id = Guid.NewGuid();
@@ -111,7 +111,7 @@ namespace Macrology {
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string Contents { get; set; }
-        public List<INode> Children => new List<INode>();
+        public List<INode> Children => new();
 
         public Macro(string name, string contents) {
             this.Id = Guid.NewGuid();
