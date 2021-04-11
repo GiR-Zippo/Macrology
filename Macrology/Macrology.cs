@@ -1,6 +1,7 @@
 ﻿using Dalamud.Game.Command;
 using Dalamud.Plugin;
 using System;
+using XivCommon;
 
 namespace Macrology {
     public class Macrology : IDalamudPlugin {
@@ -9,7 +10,7 @@ namespace Macrology {
         public string Name => "Macrology";
 
         public DalamudPluginInterface Interface { get; private set; } = null!;
-        public GameFunctions Functions { get; private set; } = null!;
+        public XivCommonBase Common { get; private set; } = null!;
         public PluginUi Ui { get; private set; } = null!;
         public MacroHandler MacroHandler { get; private set; } = null!;
         public Configuration Config { get; private set; } = null!;
@@ -17,7 +18,7 @@ namespace Macrology {
 
         public void Initialize(DalamudPluginInterface pluginInterface) {
             this.Interface = pluginInterface ?? throw new ArgumentNullException(nameof(pluginInterface), "DalamudPluginInterface cannot be null");
-            this.Functions = new GameFunctions(this);
+            this.Common = new XivCommonBase(this.Interface);
             this.Ui = new PluginUi(this);
             this.MacroHandler = new MacroHandler(this);
             this.Config = Configuration.Load(this) ?? new Configuration();
