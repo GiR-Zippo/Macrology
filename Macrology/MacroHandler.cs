@@ -75,6 +75,7 @@ namespace Macrology {
                         i = 0;
                         continue;
                     }
+
                     // set default wait
                     if (command.Trim().StartsWith("/defaultwait ")) {
                         var defWaitStr = command.Split(' ')[1];
@@ -95,6 +96,7 @@ namespace Macrology {
                     } else {
                         wait ??= TimeSpan.FromMilliseconds(100);
                     }
+
                     await Task.Delay((TimeSpan) wait);
 
                     // increment to next line
@@ -136,7 +138,6 @@ namespace Macrology {
             return cancelled;
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "delegate")]
         public void OnFrameworkUpdate(Framework framework) {
             // get a message to send, but discard it if we're not ready
             if (!this._commands.Reader.TryRead(out var command) || !this._ready) {
