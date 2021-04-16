@@ -7,7 +7,7 @@
                 AssemblyName="$(AssemblyName)"
                 VersionComponents="3"
                 MakeZip="true"
-                Include="Macrology.dll;Macrology.pdb"/>
+                Include="Macrology.dll;Macrology.pdb;Macrology.json"/>
     </Target>
 </Project>
 
