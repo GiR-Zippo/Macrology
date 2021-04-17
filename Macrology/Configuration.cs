@@ -20,7 +20,7 @@ namespace Macrology {
         public int MaxLength { get; set; } = 10_000;
 
         internal void Initialise(Macrology plugin) {
-            this.Plugin = plugin ?? throw new ArgumentNullException(nameof(plugin), "Macrology cannot be null");
+            this.Plugin = plugin;
         }
 
         internal void Save() {
@@ -30,13 +30,7 @@ namespace Macrology {
         }
 
         private static string ConfigPath(Macrology plugin) {
-            string[] paths = {
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                "XIVLauncher",
-                "pluginConfigs",
-                $"{plugin.Name}.json",
-            };
-            return Path.Combine(paths);
+            return plugin.Interface.ConfigFile.ToString();
         }
 
         internal static Configuration? Load(Macrology plugin) {
