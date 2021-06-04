@@ -16,6 +16,11 @@ part of macro macros).
 Lastly, you can also organise macros into folders (and nest folders)
 for easier access.
 
+## Install
+
+- Add `https://plugins.annaclemens.io/unofficial` to your list of custom repositories.
+- Install via `/xlplugins`.
+
 ## Commands
 
 - `/mmacros` - opens the main interface
