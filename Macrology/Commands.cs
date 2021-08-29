@@ -32,7 +32,7 @@ namespace Macrology {
                     this.OnMacroCancelCommand(args);
                     break;
                 default:
-                    this.Plugin.Interface.Framework.Gui.Chat.PrintError($"The command {command} was passed to Macrology, but there is no handler available.");
+                    this.Plugin.ChatGui.PrintError($"The command {command} was passed to Macrology, but there is no handler available.");
                     break;
             }
         }
@@ -44,13 +44,13 @@ namespace Macrology {
         private void OnMacroCommand(string args) {
             var first = args.Trim().Split(' ').FirstOrDefault() ?? "";
             if (!Guid.TryParse(first, out var id)) {
-                this.Plugin.Interface.Framework.Gui.Chat.PrintError("First argument must be the UUID of the macro to execute.");
+                this.Plugin.ChatGui.PrintError("First argument must be the UUID of the macro to execute.");
                 return;
             }
 
             var macro = this.Plugin.Config.FindMacro(id);
             if (macro == null) {
-                this.Plugin.Interface.Framework.Gui.Chat.PrintError($"No macro with ID {id} found.");
+                this.Plugin.ChatGui.PrintError($"No macro with ID {id} found.");
                 return;
             }
 
@@ -68,19 +68,19 @@ namespace Macrology {
             }
 
             if (!Guid.TryParse(first, out var id)) {
-                this.Plugin.Interface.Framework.Gui.Chat.PrintError("First argument must either be \"all\" or the UUID of the macro to cancel.");
+                this.Plugin.ChatGui.PrintError("First argument must either be \"all\" or the UUID of the macro to cancel.");
                 return;
             }
 
             var macro = this.Plugin.Config.FindMacro(id);
             if (macro == null) {
-                this.Plugin.Interface.Framework.Gui.Chat.PrintError($"No macro with ID {id} found.");
+                this.Plugin.ChatGui.PrintError($"No macro with ID {id} found.");
                 return;
             }
 
-            var entry = this.Plugin.MacroHandler.Running.FirstOrDefault(e => e.Value.Id == id);
+            var entry = this.Plugin.MacroHandler.Running.FirstOrDefault(e => e.Value?.Id == id);
             if (entry.Value == null) {
-                this.Plugin.Interface.Framework.Gui.Chat.PrintError($"That macro is not running.");
+                this.Plugin.ChatGui.PrintError("That macro is not running.");
                 return;
             }
 

@@ -23,7 +23,7 @@ namespace Macrology {
             this.Plugin = plugin ?? throw new ArgumentNullException(nameof(plugin), "Macrology cannot be null");
         }
 
-        public void OpenSettings(object sender, EventArgs e) {
+        public void OpenSettings() {
             this.SettingsVisible = true;
         }
 
@@ -83,21 +83,25 @@ namespace Macrology {
             ImGui.Text("Running macros");
             ImGui.PushItemWidth(-1f);
             if (ImGui.BeginListBox("##running-macros")) {
-                foreach (var entry in this.Plugin.MacroHandler.Running) {
-                    var name = $"{entry.Value.Name}";
-                    if (this._showIdents) {
-                        var ident = entry.Key.ToString();
-                        name += $" ({ident.Substring(ident.Length - 7)})";
+                foreach (var (id, value) in this.Plugin.MacroHandler.Running) {
+                    if (value == null) {
+                        continue;
                     }
 
-                    if (this.Plugin.MacroHandler.IsPaused(entry.Key)) {
+                    var name = $"{value.Name}";
+                    if (this._showIdents) {
+                        var ident = id.ToString();
+                        name += $" ({ident[^7..]})";
+                    }
+
+                    if (this.Plugin.MacroHandler.IsPaused(id)) {
                         name += " (paused)";
                     }
 
-                    var cancelled = this.Plugin.MacroHandler.IsCancelled(entry.Key);
+                    var cancelled = this.Plugin.MacroHandler.IsCancelled(id);
                     var flags = cancelled ? ImGuiSelectableFlags.Disabled : ImGuiSelectableFlags.None;
-                    if (ImGui.Selectable($"{name}##{entry.Key}", this.RunningChoice == entry.Key, flags)) {
-                        this.RunningChoice = entry.Key;
+                    if (ImGui.Selectable($"{name}##{id}", this.RunningChoice == id, flags)) {
+                        this.RunningChoice = id;
                     }
                 }
 

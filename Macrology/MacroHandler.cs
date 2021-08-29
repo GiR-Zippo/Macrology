@@ -1,11 +1,11 @@
-﻿using Dalamud.Game.Internal;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Channels;
 using System.Threading.Tasks;
+using Dalamud.Game;
 
 namespace Macrology {
     public class MacroHandler {
@@ -21,13 +21,13 @@ namespace Macrology {
 
         private Macrology Plugin { get; }
         private readonly Channel<string> _commands = Channel.CreateUnbounded<string>();
-        public ConcurrentDictionary<Guid, Macro> Running { get; } = new();
+        public ConcurrentDictionary<Guid, Macro?> Running { get; } = new();
         private readonly ConcurrentDictionary<Guid, bool> _cancelled = new();
         private readonly ConcurrentDictionary<Guid, bool> _paused = new();
 
         public MacroHandler(Macrology plugin) {
             this.Plugin = plugin ?? throw new ArgumentNullException(nameof(plugin), "Macrology cannot be null");
-            this._ready = this.Plugin.Interface.ClientState.LocalPlayer != null;
+            this._ready = this.Plugin.ClientState.LocalPlayer != null;
         }
 
         private static string[] ExtractCommands(string macro) {
@@ -138,7 +138,7 @@ namespace Macrology {
             return cancelled;
         }
 
-        public void OnFrameworkUpdate(Framework framework) {
+        public void OnFrameworkUpdate(Framework framework1) {
             // get a message to send, but discard it if we're not ready
             if (!this._commands.Reader.TryRead(out var command) || !this._ready) {
                 return;
@@ -165,11 +165,11 @@ namespace Macrology {
             return TimeSpan.FromSeconds(seconds);
         }
 
-        internal void OnLogin(object sender, EventArgs args) {
+        internal void OnLogin(object? sender, EventArgs args) {
             this._ready = true;
         }
 
-        internal void OnLogout(object sender, EventArgs args) {
+        internal void OnLogout(object? sender, EventArgs args) {
             this._ready = false;
 
             foreach (var id in this.Running.Keys) {

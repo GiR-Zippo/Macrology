@@ -1,13 +1,14 @@
 ﻿using Dalamud.Configuration;
-using Dalamud.Plugin;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Dalamud.Logging;
 
 namespace Macrology {
+    [Serializable]
     public class Configuration : IPluginConfiguration {
         private Macrology Plugin { get; set; } = null!;
 
@@ -136,7 +137,7 @@ namespace Macrology {
             return objectType == typeof(INode);
         }
 
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) {
+        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer) {
             throw new InvalidOperationException("Use default serialization.");
         }
 
@@ -148,16 +149,16 @@ namespace Macrology {
                 INode node;
                 if (jsonObject.ContainsKey("Contents")) {
                     node = new Macro(
-                        jsonObject["Id"].ToObject<Guid>(),
-                        jsonObject["Name"].ToObject<string>(),
-                        jsonObject["Contents"].ToObject<string>()
+                        jsonObject["Id"]!.ToObject<Guid>(),
+                        jsonObject["Name"]!.ToObject<string>()!,
+                        jsonObject["Contents"]!.ToObject<string>()!
                     );
                 }
                 else {
                     node = new Folder(
-                        jsonObject["Id"].ToObject<Guid>(),
-                        jsonObject["Name"].ToObject<string>(),
-                        (List<INode>) this.ReadJson(jsonObject["Children"].CreateReader(), typeof(List<INode>), null, serializer)
+                        jsonObject["Id"]!.ToObject<Guid>(),
+                        jsonObject["Name"]!.ToObject<string>()!,
+                        (List<INode>) this.ReadJson(jsonObject["Children"]!.CreateReader(), typeof(List<INode>), null, serializer)
                     );
                 }
 
