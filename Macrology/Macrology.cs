@@ -6,6 +6,7 @@ using Dalamud.Game.ClientState;
 using Dalamud.Game.Gui;
 using Dalamud.IoC;
 using XivCommon;
+using Dalamud.Plugin.Services;
 
 namespace Macrology {
     public class Macrology : IDalamudPlugin {
@@ -17,16 +18,19 @@ namespace Macrology {
         internal DalamudPluginInterface Interface { get; private init; } = null!;
 
         [PluginService]
-        internal ChatGui ChatGui { get; private init; } = null!;
+        internal IChatGui ChatGui { get; private init; } = null!;
 
         [PluginService]
-        internal ClientState ClientState { get; private init; } = null!;
+        internal IClientState ClientState { get; private init; } = null!;
 
         [PluginService]
-        internal CommandManager CommandManager { get; private init; } = null!;
+        internal ICommandManager CommandManager { get; private init; } = null!;
 
         [PluginService]
-        internal Framework Framework { get; private init; } = null!;
+        internal IFramework Framework { get; private init; } = null;
+
+        [PluginService]
+        internal IPluginLog PluginLog { get; private init; } = null;
 
         public XivCommonBase Common { get; }
         public PluginUi Ui { get; }
@@ -34,8 +38,14 @@ namespace Macrology {
         public Configuration Config { get; }
         private Commands Commands { get; }
 
-        public Macrology() {
-            this.Common = new XivCommonBase();
+        public Macrology(DalamudPluginInterface pluginInterface, IClientState clientState, IFramework framework, ICommandManager commandManager, IPluginLog pluginLog) {
+            this.ClientState = clientState;
+            this.Interface = pluginInterface;
+            this.Framework = framework;
+            this.CommandManager = commandManager;
+            this.PluginLog = pluginLog;
+
+            this.Common = new XivCommonBase(pluginInterface);
             this.Ui = new PluginUi(this);
             this.MacroHandler = new MacroHandler(this);
             this.Config = Configuration.Load(this) ?? new Configuration();

@@ -6,10 +6,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Dalamud.Logging;
+using Dalamud.Plugin.Services;
+using Dalamud.IoC;
 
 namespace Macrology {
     [Serializable]
     public class Configuration : IPluginConfiguration {
+
         private Macrology Plugin { get; set; } = null!;
 
         public int Version { get; set; } = 1;
@@ -46,7 +49,7 @@ namespace Macrology {
                 configText = File.ReadAllText(configPath);
             }
             catch (IOException e) {
-                PluginLog.Log($"Could not read config at {configPath}: {e.Message}.");
+                plugin.PluginLog.Debug($"Could not read config at {configPath}: {e.Message}.");
                 return null;
             }
 

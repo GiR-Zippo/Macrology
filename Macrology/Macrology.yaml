@@ -1,9 +1,0 @@
-﻿author: ascclemens
-name: Macrology
-punchline: Adds a better macro system to the game.
-description: |-
-  Adds a better macro system to the game.
-
-  Macrology allows for macros of infinite length, adds looping,
-  allows comments, supports pausing, allows you to run multiple
-  macros at once, and supports fractional waits.

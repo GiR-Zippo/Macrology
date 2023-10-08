@@ -1,0 +1,10 @@
+{
+    "Author": "ascclemens",
+    "Name": "Macrology",
+    "Punchline": "Adds a better macro system to the game.",
+    "Description": "Adds a better macro system to the game. Macrology allows for macros of infinite length, adds looping, allows comments, supports pausing, allows you to run multiple macros at once, and supports fractional waits.",
+    "InternalName": "Macrology",
+    "ApplicableVersion": "any",
+    "Tags": [
+    ]
+}

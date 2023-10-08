@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Channels;
 using System.Threading.Tasks;
-using Dalamud.Game;
+using Dalamud.Plugin.Services;
 
 namespace Macrology {
     public class MacroHandler {
@@ -138,7 +138,7 @@ namespace Macrology {
             return cancelled;
         }
 
-        public void OnFrameworkUpdate(Framework framework1) {
+        public void OnFrameworkUpdate(IFramework framework1) {
             // get a message to send, but discard it if we're not ready
             if (!this._commands.Reader.TryRead(out var command) || !this._ready) {
                 return;
@@ -165,11 +165,11 @@ namespace Macrology {
             return TimeSpan.FromSeconds(seconds);
         }
 
-        internal void OnLogin(object? sender, EventArgs args) {
+        internal void OnLogin() {
             this._ready = true;
         }
 
-        internal void OnLogout(object? sender, EventArgs args) {
+        internal void OnLogout() {
             this._ready = false;
 
             foreach (var id in this.Running.Keys) {
