@@ -18,7 +18,7 @@ for easier access.
 
 ## Install
 
-- Add `https://plugins.annaclemens.io/unofficial` to your list of custom repositories.
+- Add `https://raw.githubusercontent.com/GiR-Zippo/Macrology/main/data/pluginmaster.json` to your list of custom repositories.
 - Install via `/xlplugins`.
 
 ## Commands
