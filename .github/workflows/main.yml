@@ -38,6 +38,9 @@ jobs:
           draft: false
           prerelease: false
 
+      - name: remove old pluginmaster file
+        run: Remove-Item -LiteralPath ./Data/* -Force -Recurse
+
       - name: copy pluginmaster file
         run: Copy-Item ./Configs/* ./Data -Force
           
