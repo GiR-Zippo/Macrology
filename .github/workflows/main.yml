@@ -39,22 +39,22 @@ jobs:
           prerelease: false
 
       - name: remove old pluginmaster file
-        run: Remove-Item ./Data/* -Force -Recurse
+        run: Remove-Item ./data/* -Force -Recurse
 
       - name: copy pluginmaster file
-        run: Copy-Item ./Configs/* ./Data -Force
+        run: Copy-Item ./configs/* ./data -Force
           
       - name: Set version in pluginmaster
-        run: sed -i 's/iRELEASE/${{steps.get-version.outputs.version}}/g' ./Data/pluginmaster.json
+        run: sed -i 's/iRELEASE/${{steps.get-version.outputs.version}}/g' ./data/pluginmaster.json
       
       - name: Set version in Macrology
-        run: sed -i 's/iRELEASE/${{steps.get-version.outputs.version}}/g' ./Data/Macrology.json
+        run: sed -i 's/iRELEASE/${{steps.get-version.outputs.version}}/g' ./data/Macrology.json
 
       - name: Commit latest build
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "Update Build"
-          file_pattern: "./Data/*.json"
+          file_pattern: "./data/*.json"
           
       - name: Setup .NET
         uses: actions/setup-dotnet@v3.0.3
