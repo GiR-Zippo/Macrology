@@ -5,104 +5,108 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 
-namespace Macrology {
-    public class PluginUi {
+namespace Macrology
+{
+    public class PluginUi
+    {
         private Macrology Plugin { get; }
-        private INode? Dragged { get; set; }
+        private INode Dragged { get; set; }
         private Guid RunningChoice { get; set; } = Guid.Empty;
         private bool _showIdents;
 
         private bool _settingsVisible;
 
-        public bool SettingsVisible {
-            get => this._settingsVisible;
-            set => this._settingsVisible = value;
+        public bool SettingsVisible
+        {
+            get => _settingsVisible;
+            set => _settingsVisible = value;
         }
 
-        public PluginUi(Macrology plugin) {
-            this.Plugin = plugin ?? throw new ArgumentNullException(nameof(plugin), "Macrology cannot be null");
+        public PluginUi(Macrology plugin)
+        {
+            Plugin = plugin ?? throw new ArgumentNullException(nameof(plugin), "Macrology cannot be null");
         }
 
-        public void OpenSettings() {
-            this.SettingsVisible = true;
+        public void OpenSettings()
+        {
+            SettingsVisible = true;
         }
 
-        public void Draw() {
-            if (this.SettingsVisible) {
-                this.DrawSettings();
-            }
+        public void Draw()
+        {
+            if (SettingsVisible)
+                DrawSettings();
         }
 
-        private bool RemoveNode(ICollection<INode> list, INode toRemove) {
-            return list.Remove(toRemove) || list.Any(node => node.Children.Count > 0 && this.RemoveNode(node.Children, toRemove));
+        private bool RemoveNode(ICollection<INode> list, INode toRemove)
+        {
+            return list.Remove(toRemove) || list.Any(node => node.Children.Count > 0 && RemoveNode(node.Children, toRemove));
         }
 
-        private void DrawSettings() {
+        private void DrawSettings()
+        {
             // unset the cancel choice if no longer running
-            if (this.RunningChoice != Guid.Empty && !this.Plugin.MacroHandler.IsRunning(this.RunningChoice)) {
-                this.RunningChoice = Guid.Empty;
-            }
+            if (RunningChoice != Guid.Empty && !Plugin.MacroHandler.IsRunning(RunningChoice))
+                RunningChoice = Guid.Empty;
 
-            if (!ImGui.Begin(this.Plugin.Name, ref this._settingsVisible)) {
+            if (!ImGui.Begin(Plugin.Name, ref _settingsVisible))
                 return;
-            }
 
             ImGui.Columns(2);
 
-            if (IconButton(FontAwesomeIcon.Plus)) {
-                this.Plugin.Config.Nodes.Add(new Macro("Untitled macro", ""));
-                this.Plugin.Config.Save();
+            if (IconButton(FontAwesomeIcon.Plus))
+            {
+                Plugin.Config.Nodes.Add(new Macro("Untitled macro", ""));
+                Plugin.Config.Save();
             }
 
             Tooltip("Add macro");
 
             ImGui.SameLine();
 
-            if (IconButton(FontAwesomeIcon.FolderPlus)) {
-                this.Plugin.Config.Nodes.Add(new Folder("Untitled folder"));
-                this.Plugin.Config.Save();
+            if (IconButton(FontAwesomeIcon.FolderPlus))
+            {
+                Plugin.Config.Nodes.Add(new Folder("Untitled folder"));
+                Plugin.Config.Save();
             }
 
             Tooltip("Add folder");
 
             var toRemove = new List<INode>();
-            foreach (var node in this.Plugin.Config.Nodes) {
-                toRemove.AddRange(this.DrawNode(node));
-            }
+            foreach (var node in Plugin.Config.Nodes)
+                toRemove.AddRange(DrawNode(node));
 
-            foreach (var node in toRemove) {
-                this.RemoveNode(this.Plugin.Config.Nodes, node);
-            }
+            foreach (var node in toRemove)
+                RemoveNode(Plugin.Config.Nodes, node);
 
-            if (toRemove.Count != 0) {
-                this.Plugin.Config.Save();
-            }
+            if (toRemove.Count != 0)
+                Plugin.Config.Save();
 
             ImGui.NextColumn();
 
             ImGui.Text("Running macros");
             ImGui.PushItemWidth(-1f);
-            if (ImGui.BeginListBox("##running-macros")) {
-                foreach (var (id, value) in this.Plugin.MacroHandler.Running) {
-                    if (value == null) {
+            if (ImGui.BeginListBox("##running-macros"))
+            {
+                foreach (var (id, value) in Plugin.MacroHandler.Running)
+                {
+                    if (value == null)
                         continue;
-                    }
 
                     var name = $"{value.Name}";
-                    if (this._showIdents) {
+                    if (_showIdents)
+                    {
                         var ident = id.ToString();
                         name += $" ({ident[^7..]})";
                     }
 
-                    if (this.Plugin.MacroHandler.IsPaused(id)) {
+                    if (Plugin.MacroHandler.IsPaused(id))
                         name += " (paused)";
-                    }
 
-                    var cancelled = this.Plugin.MacroHandler.IsCancelled(id);
+                    var cancelled = Plugin.MacroHandler.IsCancelled(id);
                     var flags = cancelled ? ImGuiSelectableFlags.Disabled : ImGuiSelectableFlags.None;
-                    if (ImGui.Selectable($"{name}##{id}", this.RunningChoice == id, flags)) {
-                        this.RunningChoice = id;
-                    }
+                    if (ImGui.Selectable($"{name}##{id}", RunningChoice == id, flags))
+                        RunningChoice = id;
                 }
 
                 ImGui.EndListBox();
@@ -110,83 +114,87 @@ namespace Macrology {
 
             ImGui.PopItemWidth();
 
-            if (ImGui.Button("Cancel") && this.RunningChoice != Guid.Empty) {
-                this.Plugin.MacroHandler.CancelMacro(this.RunningChoice);
+            if (ImGui.Button("Cancel") && RunningChoice != Guid.Empty)
+                Plugin.MacroHandler.CancelMacro(RunningChoice);
+
+            ImGui.SameLine();
+
+            var paused = RunningChoice != Guid.Empty && Plugin.MacroHandler.IsPaused(RunningChoice);
+            if (ImGui.Button(paused ? "Resume" : "Pause") && RunningChoice != Guid.Empty)
+            {
+                if (paused)
+                    Plugin.MacroHandler.ResumeMacro(RunningChoice);
+                else
+                    Plugin.MacroHandler.PauseMacro(RunningChoice);
             }
 
             ImGui.SameLine();
 
-            var paused = this.RunningChoice != Guid.Empty && this.Plugin.MacroHandler.IsPaused(this.RunningChoice);
-            if (ImGui.Button(paused ? "Resume" : "Pause") && this.RunningChoice != Guid.Empty) {
-                if (paused) {
-                    this.Plugin.MacroHandler.ResumeMacro(this.RunningChoice);
-                } else {
-                    this.Plugin.MacroHandler.PauseMacro(this.RunningChoice);
-                }
-            }
-
-            ImGui.SameLine();
-
-            ImGui.Checkbox("Show unique identifiers", ref this._showIdents);
+            ImGui.Checkbox("Show unique identifiers", ref _showIdents);
 
             ImGui.Columns(1);
 
             ImGui.End();
         }
 
-        private IEnumerable<INode> DrawNode(INode node) {
+        private IEnumerable<INode> DrawNode(INode node)
+        {
             var toRemove = new List<INode>();
             ImGui.PushID($"{node.Id}");
             var open = ImGui.TreeNode($"{node.Id}", $"{node.Name}");
 
-            if (ImGui.BeginPopupContextItem()) {
+            if (ImGui.BeginPopupContextItem())
+            {
                 var name = node.Name;
-                if (ImGui.InputText($"##{node.Id}-rename", ref name, (uint) this.Plugin.Config.MaxLength, ImGuiInputTextFlags.AutoSelectAll)) {
+                if (ImGui.InputText($"##{node.Id}-rename", ref name, (uint)Plugin.Config.MaxLength, ImGuiInputTextFlags.AutoSelectAll))
+                {
                     node.Name = name;
-                    this.Plugin.Config.Save();
+                    Plugin.Config.Save();
                 }
 
-                if (ImGui.Button("Delete")) {
+                if (ImGui.Button("Delete"))
                     toRemove.Add(node);
-                }
 
                 ImGui.SameLine();
 
-                if (ImGui.Button("Copy UUID")) {
+                if (ImGui.Button("Copy UUID"))
                     ImGui.SetClipboardText($"{node.Id}");
-                }
 
-                if (node is Macro macro) {
+                if (node is Macro macro)
+                {
                     ImGui.SameLine();
 
-                    if (ImGui.Button("Run##context")) {
-                        this.RunMacro(macro);
-                    }
+                    if (ImGui.Button("Run##context"))
+                        RunMacro(macro);
                 }
 
                 ImGui.EndPopup();
             }
 
-            if (ImGui.BeginDragDropSource()) {
+            if (ImGui.BeginDragDropSource())
+            {
                 ImGui.Text(node.Name);
-                this.Dragged = node;
+                Dragged = node;
                 ImGui.SetDragDropPayload("MACROLOGY-GUID", IntPtr.Zero, 0);
                 ImGui.EndDragDropSource();
             }
 
-            if (node is Folder dfolder && ImGui.BeginDragDropTarget()) {
+            if (node is Folder dfolder && ImGui.BeginDragDropTarget())
+            {
                 var payloadPtr = ImGui.AcceptDragDropPayload("MACROLOGY-GUID");
                 bool nullPtr;
-                unsafe {
+                unsafe
+                {
                     nullPtr = payloadPtr.NativePtr == null;
                 }
 
-                if (!nullPtr && payloadPtr.IsDelivery() && this.Dragged != null) {
-                    dfolder.Children.Add(this.Dragged.Duplicate());
-                    this.Dragged.Id = Guid.NewGuid();
-                    toRemove.Add(this.Dragged);
+                if (!nullPtr && payloadPtr.IsDelivery() && Dragged != null)
+                {
+                    dfolder.Children.Add(Dragged.Duplicate());
+                    Dragged.Id = Guid.NewGuid();
+                    toRemove.Add(Dragged);
 
-                    this.Dragged = null;
+                    Dragged = null;
                 }
 
                 ImGui.EndDragDropTarget();
@@ -194,14 +202,15 @@ namespace Macrology {
 
             ImGui.PopID();
 
-            if (open) {
-                if (node is Macro macro) {
-                    this.DrawMacro(macro);
-                } else if (node is Folder folder) {
-                    this.DrawFolder(folder);
-                    foreach (var child in node.Children) {
-                        toRemove.AddRange(this.DrawNode(child));
-                    }
+            if (open)
+            {
+                if (node is Macro macro)
+                    DrawMacro(macro);
+                else if (node is Folder folder)
+                {
+                    DrawFolder(folder);
+                    foreach (var child in node.Children)
+                        toRemove.AddRange(DrawNode(child));
                 }
 
                 ImGui.TreePop();
@@ -210,37 +219,43 @@ namespace Macrology {
             return toRemove;
         }
 
-        private void DrawMacro(Macro macro) {
+        private void DrawMacro(Macro macro)
+        {
             var contents = macro.Contents;
             ImGui.PushItemWidth(-1f);
-            if (ImGui.InputTextMultiline($"##{macro.Id}-editor", ref contents, (uint) this.Plugin.Config.MaxLength, new Vector2(0, 250))) {
+            if (ImGui.InputTextMultiline($"##{macro.Id}-editor", ref contents, (uint)Plugin.Config.MaxLength, new Vector2(0, 250)))
+            {
                 macro.Contents = contents;
-                this.Plugin.Config.Save();
+                Plugin.Config.Save();
             }
 
             ImGui.PopItemWidth();
 
-            if (ImGui.Button("Run")) {
-                this.RunMacro(macro);
-            }
+            if (ImGui.Button("Run"))
+                RunMacro(macro);
         }
 
-        private void DrawFolder(Folder folder) {
+        private void DrawFolder(Folder folder)
+        {
         }
 
-        private void RunMacro(Macro macro) {
-            this.Plugin.MacroHandler.SpawnMacro(macro);
+        private void RunMacro(Macro macro)
+        {
+            Plugin.MacroHandler.SpawnMacro(macro);
         }
 
-        private static bool IconButton(FontAwesomeIcon icon) {
+        private static bool IconButton(FontAwesomeIcon icon)
+        {
             ImGui.PushFont(UiBuilder.IconFont);
             var ret = ImGui.Button(icon.ToIconString());
             ImGui.PopFont();
             return ret;
         }
 
-        private static void Tooltip(string text) {
-            if (ImGui.IsItemHovered()) {
+        private static void Tooltip(string text)
+        {
+            if (ImGui.IsItemHovered())
+            {
                 ImGui.BeginTooltip();
                 ImGui.TextUnformatted(text);
                 ImGui.EndTooltip();

@@ -1,15 +1,14 @@
 ﻿using Dalamud.Game.Command;
 using Dalamud.Plugin;
 using System;
-using Dalamud.Game;
-using Dalamud.Game.ClientState;
-using Dalamud.Game.Gui;
 using Dalamud.IoC;
 using XivCommon;
 using Dalamud.Plugin.Services;
 
-namespace Macrology {
-    public class Macrology : IDalamudPlugin {
+namespace Macrology
+{
+    public class Macrology : IDalamudPlugin
+    {
         private bool _disposedValue;
 
         public string Name => "Macrology";
@@ -38,54 +37,61 @@ namespace Macrology {
         public Configuration Config { get; }
         private Commands Commands { get; }
 
-        public Macrology(DalamudPluginInterface pluginInterface, IClientState clientState, IFramework framework, ICommandManager commandManager, IPluginLog pluginLog) {
-            this.ClientState = clientState;
-            this.Interface = pluginInterface;
-            this.Framework = framework;
-            this.CommandManager = commandManager;
-            this.PluginLog = pluginLog;
+        public Macrology(DalamudPluginInterface pluginInterface, IClientState clientState, IFramework framework, ICommandManager commandManager, IPluginLog pluginLog)
+        {
+            Interface = pluginInterface;
+            ClientState = clientState;
+            Framework = framework;
+            CommandManager = commandManager;
+            PluginLog = pluginLog;
 
-            this.Common = new XivCommonBase(pluginInterface);
-            this.Ui = new PluginUi(this);
-            this.MacroHandler = new MacroHandler(this);
-            this.Config = Configuration.Load(this) ?? new Configuration();
-            this.Config.Initialise(this);
-            this.Commands = new Commands(this);
+            Common = new XivCommonBase(pluginInterface);
+            Ui = new PluginUi(this);
+            MacroHandler = new MacroHandler(this);
+            Config = Configuration.Load(this) ?? new Configuration();
+            Config.Initialise(this);
+            Commands = new Commands(this);
 
-            this.Interface.UiBuilder.Draw += this.Ui.Draw;
-            this.Interface.UiBuilder.OpenConfigUi += this.Ui.OpenSettings;
-            this.Framework.Update += this.MacroHandler.OnFrameworkUpdate;
-            this.ClientState.Login += this.MacroHandler.OnLogin;
-            this.ClientState.Logout += this.MacroHandler.OnLogout;
-            foreach (var (name, desc) in Commands.Descriptions) {
-                this.CommandManager.AddHandler(name, new CommandInfo(this.Commands.OnCommand) {
+            Interface.UiBuilder.Draw += Ui.Draw;
+            Interface.UiBuilder.OpenConfigUi += Ui.OpenSettings;
+            Framework.Update += MacroHandler.OnFrameworkUpdate;
+            ClientState.Login += MacroHandler.OnLogin;
+            ClientState.Logout += MacroHandler.OnLogout;
+            foreach (var (name, desc) in Commands.Descriptions)
+            {
+                CommandManager.AddHandler(name, new CommandInfo(Commands.OnCommand)
+                {
                     HelpMessage = desc,
                 });
             }
         }
 
-        protected virtual void Dispose(bool disposing) {
-            if (this._disposedValue) {
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposedValue)
+            {
                 return;
             }
 
-            if (disposing) {
-                this.Interface.UiBuilder.Draw -= this.Ui.Draw;
-                this.Interface.UiBuilder.OpenConfigUi -= this.Ui.OpenSettings;
-                this.Framework.Update -= this.MacroHandler.OnFrameworkUpdate;
-                this.ClientState.Login -= this.MacroHandler.OnLogin;
-                this.ClientState.Logout -= this.MacroHandler.OnLogout;
-                foreach (var command in Commands.Descriptions.Keys) {
-                    this.CommandManager.RemoveHandler(command);
+            if (disposing)
+            {
+                Interface.UiBuilder.Draw -= Ui.Draw;
+                Interface.UiBuilder.OpenConfigUi -= Ui.OpenSettings;
+                Framework.Update -= MacroHandler.OnFrameworkUpdate;
+                ClientState.Login -= MacroHandler.OnLogin;
+                ClientState.Logout -= MacroHandler.OnLogout;
+                foreach (var command in Commands.Descriptions.Keys)
+                {
+                    CommandManager.RemoveHandler(command);
                 }
             }
-
-            this._disposedValue = true;
+            _disposedValue = true;
         }
 
-        public void Dispose() {
+        public void Dispose()
+        {
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            this.Dispose(true);
+            Dispose(true);
             GC.SuppressFinalize(this);
         }
     }
