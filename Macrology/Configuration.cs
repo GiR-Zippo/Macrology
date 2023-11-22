@@ -11,7 +11,6 @@ namespace Macrology
     [Serializable]
     public class Configuration : IPluginConfiguration
     {
-
         private Macrology Plugin { get; set; } = null!;
 
         public int Version { get; set; } = 1;
@@ -76,6 +75,39 @@ namespace Macrology
         public Macro FindMacro(Guid id)
         {
             return Nodes.Select(node => (Macro)Traverse(node, n => n.Children).FirstOrDefault(n => n.Id == id && n is Macro)).FirstOrDefault(macro => macro != null);
+        }
+
+        //public IEnumerable<INode> GetAllNodes() => new INode[] { (INode)Nodes }.Concat(GetAllNodes(Nodes.Children));
+
+        public IEnumerable<INode> GetAllNodes(IEnumerable<INode> nodes)
+        {
+            foreach (var node in nodes)
+            {
+                yield return node;
+                if (node is Folder)
+                {
+                    var children = (node as Folder).Children;
+                    foreach (var childNode in GetAllNodes(children))
+                    {
+                        yield return childNode;
+                    }
+                }
+            }
+        }
+
+        public bool TryFindParent(INode node, out Folder parent)
+        {
+            foreach (var candidate in Nodes.Concat(Nodes))  // GetAllNodes())
+            {
+                if (candidate is Folder folder && folder.Children.Contains(node))
+                {
+                    parent = folder;
+                    return true;
+                }
+            }
+
+            parent = null;
+            return false;
         }
     }
 

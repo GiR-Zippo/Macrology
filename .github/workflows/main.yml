@@ -50,12 +50,6 @@ jobs:
       - name: Set version in Macrology
         run: sed -i 's/iRELEASE/${{steps.get-version.outputs.version}}/g' ./data/Macrology.json
 
-      - name: Commit latest build
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "Update Build"
-          file_pattern: "./data/*.json"
-          
       - name: Setup .NET
         uses: actions/setup-dotnet@v3.0.3
         with:
@@ -72,6 +66,12 @@ jobs:
       - name: Build
         run: |
           dotnet build --no-restore --configuration Release --nologo
+
+      - name: Commit latest build
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Update Build"
+          file_pattern: "./data/*.json"
 
       - name: Move latest build to Release
         run: Move-Item -Path ./Macrology/bin/x64/Release/Macrology/* -Destination ./data/ -Force

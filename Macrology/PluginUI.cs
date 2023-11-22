@@ -38,10 +38,17 @@ namespace Macrology
                 DrawSettings();
         }
 
+        private bool InsertNode(ICollection<INode> list, INode toRemove)
+        {
+            return list.Remove(toRemove) || list.Any(node => node.Children.Count > 0 && RemoveNode(node.Children, toRemove));
+        }
+
         private bool RemoveNode(ICollection<INode> list, INode toRemove)
         {
             return list.Remove(toRemove) || list.Any(node => node.Children.Count > 0 && RemoveNode(node.Children, toRemove));
         }
+
+        private Dictionary<INode, INode> moveNode = new Dictionary<INode, INode>();
 
         private void DrawSettings()
         {
@@ -59,7 +66,6 @@ namespace Macrology
                 Plugin.Config.Nodes.Add(new Macro("Untitled macro", ""));
                 Plugin.Config.Save();
             }
-
             Tooltip("Add macro");
 
             ImGui.SameLine();
@@ -69,7 +75,6 @@ namespace Macrology
                 Plugin.Config.Nodes.Add(new Folder("Untitled folder"));
                 Plugin.Config.Save();
             }
-
             Tooltip("Add folder");
 
             var toRemove = new List<INode>();
@@ -78,6 +83,37 @@ namespace Macrology
 
             foreach (var node in toRemove)
                 RemoveNode(Plugin.Config.Nodes, node);
+
+            foreach (var mData in moveNode)
+            {
+                if (Plugin.Config.TryFindParent(mData.Value, out var draggedNodeParent))
+                {
+                    if (mData.Key is Folder targetFolderNode)
+                    {
+                        targetFolderNode.Children.Add(mData.Value);
+                        draggedNodeParent.Children.Remove(mData.Value);
+                    }
+                    else
+                    {
+                        if (Plugin.Config.TryFindParent(mData.Key, out var targetNodeParent))
+                        {
+                            var targetNodeIndex = targetNodeParent.Children.IndexOf(mData.Key);
+                            if (targetNodeParent == draggedNodeParent)
+                            {
+                                var draggedNodeIndex = targetNodeParent.Children.IndexOf(mData.Value);
+                                if (draggedNodeIndex < targetNodeIndex)
+                                {
+                                    targetNodeIndex -= 1;
+                                }
+                                targetNodeParent.Children.Remove(mData.Value);
+                                targetNodeParent.Children.Insert(targetNodeIndex, mData.Value);
+                                Plugin.Config.Save();
+                            }
+                        }
+                    }
+                }
+            }
+            moveNode.Clear();
 
             if (toRemove.Count != 0)
                 Plugin.Config.Save();
@@ -129,11 +165,8 @@ namespace Macrology
             }
 
             ImGui.SameLine();
-
             ImGui.Checkbox("Show unique identifiers", ref _showIdents);
-
             ImGui.Columns(1);
-
             ImGui.End();
         }
 
@@ -193,6 +226,30 @@ namespace Macrology
                     dfolder.Children.Add(Dragged.Duplicate());
                     Dragged.Id = Guid.NewGuid();
                     toRemove.Add(Dragged);
+
+                    Dragged = null;
+                }
+
+                ImGui.EndDragDropTarget();
+            }
+            else if (node is Macro dmacro && ImGui.BeginDragDropTarget())
+            {
+                var payload = ImGui.AcceptDragDropPayload("MACROLOGY-GUID");
+                bool nullPtr;
+                unsafe { nullPtr = payload.NativePtr == null; }
+
+                var targetNode = node;
+                if (!nullPtr && payload.IsDelivery() && Dragged != null)
+                {
+                    if (Plugin.Config.TryFindParent(Dragged, out var draggedNodeParent))
+                    {
+                        if (Plugin.Config.TryFindParent(targetNode, out var targetNodeParent))
+                            moveNode.Add(targetNode, Dragged);
+                        else
+                            Plugin.PluginLog.Debug($"Could not find parent of node \"{targetNode.Name}\"");
+                    }
+                    else
+                        Plugin.PluginLog.Debug($"Could not find parent of node \"{Dragged.Name}\"");
 
                     Dragged = null;
                 }
