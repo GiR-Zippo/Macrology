@@ -3,7 +3,7 @@
         "Author": "GiR-Zippo, Anna(ascclemens)",
         "Name": "Macrology",
         "InternalName": "Macrology",
-        "AssemblyVersion": "1.0.1.0",
+        "AssemblyVersion": "1.0.1.1",
         "Description": "Adds a better macro system to the game. Macrology allows for macros of infinite length, adds looping, allows comments, supports pausing, allows you to run multiple macros at once, and supports fractional waits.",
         "ApplicableVersion": "any",
         "Tags": [
@@ -19,8 +19,8 @@
         "IsTestingExclusive": "false",
         "AcceptsFeedback": "false",
         "LastUpdate": "0",
-        "DownloadLinkInstall": "https://github.com/GiR-Zippo/Macrology/releases/download/1.0.1.0/latest.zip",
-        "DownloadLinkTesting": "https://github.com/GiR-Zippo/Macrology/releases/download/1.0.1.0/latest.zip",
-        "DownloadLinkUpdate": "https://github.com/GiR-Zippo/Macrology/releases/download/1.0.1.0/latest.zip"
+        "DownloadLinkInstall": "https://github.com/GiR-Zippo/Macrology/releases/download/1.0.1.1/latest.zip",
+        "DownloadLinkTesting": "https://github.com/GiR-Zippo/Macrology/releases/download/1.0.1.1/latest.zip",
+        "DownloadLinkUpdate": "https://github.com/GiR-Zippo/Macrology/releases/download/1.0.1.1/latest.zip"
     }
 ]
