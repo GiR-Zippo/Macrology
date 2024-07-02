@@ -14,7 +14,7 @@ namespace Macrology
         public string Name => "Macrology";
 
         [PluginService]
-        internal DalamudPluginInterface Interface { get; private init; } = null!;
+        internal IDalamudPluginInterface Interface { get; private init; } = null!;
 
         [PluginService]
         internal IChatGui ChatGui { get; private init; } = null!;
@@ -32,12 +32,13 @@ namespace Macrology
         internal IPluginLog PluginLog { get; private init; } = null;
 
         public XivCommonBase Common { get; }
+
         public PluginUi Ui { get; }
         public MacroHandler MacroHandler { get; }
         public Configuration Config { get; }
         private Commands Commands { get; }
 
-        public Macrology(DalamudPluginInterface pluginInterface, IClientState clientState, IFramework framework, ICommandManager commandManager, IPluginLog pluginLog)
+        public Macrology(IDalamudPluginInterface pluginInterface, IClientState clientState, IFramework framework, ICommandManager commandManager, IPluginLog pluginLog)
         {
             Interface = pluginInterface;
             ClientState = clientState;
@@ -46,6 +47,7 @@ namespace Macrology
             PluginLog = pluginLog;
 
             Common = new XivCommonBase(pluginInterface);
+
             Ui = new PluginUi(this);
             MacroHandler = new MacroHandler(this);
             Config = Configuration.Load(this) ?? new Configuration();
@@ -53,6 +55,7 @@ namespace Macrology
             Commands = new Commands(this);
 
             Interface.UiBuilder.Draw += Ui.Draw;
+            Interface.UiBuilder.OpenMainUi += Ui.OpenSettings;
             Interface.UiBuilder.OpenConfigUi += Ui.OpenSettings;
             Framework.Update += MacroHandler.OnFrameworkUpdate;
             ClientState.Login += MacroHandler.OnLogin;
@@ -76,6 +79,7 @@ namespace Macrology
             if (disposing)
             {
                 Interface.UiBuilder.Draw -= Ui.Draw;
+                Interface.UiBuilder.OpenMainUi += Ui.OpenSettings;
                 Interface.UiBuilder.OpenConfigUi -= Ui.OpenSettings;
                 Framework.Update -= MacroHandler.OnFrameworkUpdate;
                 ClientState.Login -= MacroHandler.OnLogin;
