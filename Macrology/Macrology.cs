@@ -4,6 +4,7 @@ using System;
 using Dalamud.IoC;
 using XivCommon;
 using Dalamud.Plugin.Services;
+using Macrology.Common.Functions;
 
 namespace Macrology
 {
@@ -31,7 +32,10 @@ namespace Macrology
         [PluginService]
         internal IPluginLog PluginLog { get; private init; } = null;
 
-        public XivCommonBase Common { get; }
+        //public XivCommonBase Common { get; }
+
+        //Remove
+        public Api api { get; }
 
         public PluginUi Ui { get; }
         public MacroHandler MacroHandler { get; }
@@ -46,7 +50,10 @@ namespace Macrology
             CommandManager = commandManager;
             PluginLog = pluginLog;
 
-            Common = new XivCommonBase(pluginInterface);
+            //Common = new XivCommonBase(pluginInterface);
+
+            //Until XivCommonBase is up again
+            api = pluginInterface.Create<Api>();
 
             Ui = new PluginUi(this);
             MacroHandler = new MacroHandler(this);

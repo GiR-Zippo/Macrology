@@ -159,7 +159,7 @@ namespace Macrology
                 return;
 
             // send the message as if it were entered in the chat box
-            Plugin.Common.Functions.Chat.SendMessage(command);
+            Common.Functions.Chat.SendMessage(command);
         }
 
         private static TimeSpan? ExtractWait(ref string command)
