@@ -183,7 +183,7 @@ namespace Macrology
             _ready = true;
         }
 
-        internal void OnLogout()
+        internal void OnLogout(int type, int code)
         {
             _ready = false;
 
