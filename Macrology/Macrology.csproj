@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0-windows7.0</TargetFramework>
+    <TargetFramework>net9.0-windows7.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <Platforms>x64</Platforms>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -10,7 +10,7 @@
 
     <Description>Adds a better macro system to the game.</Description>
     <PackageProjectUrl>https://git.anna.lgbt/anna/Macrology</PackageProjectUrl>
-    <Version>1.0.1.4</Version>
+    <Version>1.0.1.5</Version>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -19,17 +19,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DalamudPackager" Version="11.0.0" />
-    <PackageReference Include="Fody" Version="6.8.2" PrivateAssets="all" />
-    <PackageReference Include="H.Formatters" Version="14.0.0" />
-    <PackageReference Include="H.Formatters.Newtonsoft.Json" Version="14.0.0" />
-    <PackageReference Include="H.Pipes" Version="14.0.0" />
-    <PackageReference Include="H.Pipes.AccessControl" Version="14.0.0" />
+    <PackageReference Include="DalamudPackager" Version="12.0.0" />
+    <PackageReference Include="Fody" Version="6.9.2" PrivateAssets="all" />
+    <PackageReference Include="H.Formatters" Version="15.0.0" />
+    <PackageReference Include="H.Formatters.Newtonsoft.Json" Version="15.0.0" />
+    <PackageReference Include="H.Pipes" Version="15.0.0" />
+    <PackageReference Include="H.Pipes.AccessControl" Version="15.0.0" />
     <PackageReference Include="JetBrains.Annotations" Version="2024.3.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Resourcer.Fody" Version="1.8.1" PrivateAssets="all" />
-    <PackageReference Include="System.Text.Encoding.CodePages" Version="9.0.0" />
-    <PackageReference Include="TinyIpc" Version="4.3.3" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="9.0.3" />
+    <PackageReference Include="TinyIpc" Version="5.1.0" />
     <PackageReference Include="XivCommon" Version="9.0.0" />
   </ItemGroup>
 
@@ -41,6 +41,7 @@
     <Reference Include="Lumina" HintPath="$(AppData)\XIVLauncher\addon\Hooks\dev\Lumina.dll" Private="false" />
     <Reference Include="Lumina.Excel" HintPath="$(AppData)\XIVLauncher\addon\Hooks\dev\Lumina.Excel.dll" Private="false" />
     <Reference Include="Newtonsoft.Json" HintPath="$(AppData)\XIVLauncher\addon\Hooks\dev\Newtonsoft.Json.dll" Private="false" />
+    <Reference Include="InteropGenerator.Runtime" HintPath="$(AppData)\XIVLauncher\addon\Hooks\dev\InteropGenerator.Runtime.dll" Private="false" />
   </ItemGroup>
 
   <Target Name="CleanOutDir" AfterTargets="Build" Condition="'$(Configuration)' == 'Release'">
