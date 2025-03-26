@@ -2,7 +2,7 @@
   "Author": "ascclemens",
   "Name": "Macrology",
   "InternalName": "Macrology",
-  "AssemblyVersion": "1.0.1.4",
+  "AssemblyVersion": "1.0.1.5",
   "Description": "Adds a better macro system to the game. Macrology allows for macros of infinite length, adds looping, allows comments, supports pausing, allows you to run multiple macros at once, and supports fractional waits.",
   "ApplicableVersion": "any",
   "Tags": [],
