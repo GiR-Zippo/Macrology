@@ -42,7 +42,7 @@ namespace Macrology
         public Configuration Config { get; }
         private Commands Commands { get; }
 
-        public Macrology(IDalamudPluginInterface pluginInterface, IClientState clientState, IFramework framework, ICommandManager commandManager, IPluginLog pluginLog)
+        public Macrology(IDalamudPluginInterface pluginInterface, IChatGui chatGui, IDataManager data, ICommandManager commandManager, IClientState clientState, IFramework framework, IPluginLog pluginLog)
         {
             Interface = pluginInterface;
             ClientState = clientState;
