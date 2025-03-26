@@ -30,7 +30,9 @@ namespace Macrology
         public MacroHandler(Macrology plugin)
         {
             Plugin = plugin ?? throw new ArgumentNullException(nameof(plugin), "Macrology cannot be null");
-            _ready = Plugin.ClientState.LocalPlayer != null;
+            if (plugin.ClientState != null)
+                if (plugin.ClientState.IsLoggedIn)
+                    _ready = true;
         }
 
         private static string[] ExtractCommands(string macro)

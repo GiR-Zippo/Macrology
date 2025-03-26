@@ -44,6 +44,7 @@ namespace Macrology
 
         public Macrology(IDalamudPluginInterface pluginInterface, IChatGui chatGui, IDataManager data, ICommandManager commandManager, IClientState clientState, IFramework framework, IPluginLog pluginLog)
         {
+            api = pluginInterface.Create<Api>();
             Interface = pluginInterface;
             ClientState = clientState;
             Framework = framework;
@@ -53,7 +54,7 @@ namespace Macrology
             //Common = new XivCommonBase(pluginInterface);
 
             //Until XivCommonBase is up again
-            api = pluginInterface.Create<Api>();
+
 
             Ui = new PluginUi(this);
             MacroHandler = new MacroHandler(this);
