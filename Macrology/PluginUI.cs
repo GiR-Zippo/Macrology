@@ -1,5 +1,5 @@
 ﻿using Dalamud.Interface;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -174,12 +174,12 @@ namespace Macrology
         {
             var toRemove = new List<INode>();
             ImGui.PushID($"{node.Id}");
-            var open = ImGui.TreeNode($"{node.Id}", $"{node.Name}");
+            var open = ImGui.TreeNode($"{node.Name}");
 
-            if (ImGui.BeginPopupContextItem())
+            if (ImGui.BeginPopupContextItem(""))
             {
                 var name = node.Name;
-                if (ImGui.InputText($"##{node.Id}-rename", ref name, (uint)Plugin.Config.MaxLength, ImGuiInputTextFlags.AutoSelectAll))
+                if (ImGui.InputText($"##{node.Id}-rename", ref name, Plugin.Config.MaxLength, ImGuiInputTextFlags.AutoSelectAll))
                 {
                     node.Name = name;
                     Plugin.Config.Save();
@@ -208,7 +208,7 @@ namespace Macrology
             {
                 ImGui.Text(node.Name);
                 Dragged = node;
-                ImGui.SetDragDropPayload("MACROLOGY-GUID", IntPtr.Zero, 0);
+                ImGui.SetDragDropPayload("MACROLOGY-GUID", new ReadOnlySpan<byte>(null), 0);
                 ImGui.EndDragDropSource();
             }
 
@@ -218,7 +218,7 @@ namespace Macrology
                 bool nullPtr;
                 unsafe
                 {
-                    nullPtr = payloadPtr.NativePtr == null;
+                    nullPtr = payloadPtr.IsNull;// == null;
                 }
 
                 if (!nullPtr && payloadPtr.IsDelivery() && Dragged != null)
@@ -236,7 +236,7 @@ namespace Macrology
             {
                 var payload = ImGui.AcceptDragDropPayload("MACROLOGY-GUID");
                 bool nullPtr;
-                unsafe { nullPtr = payload.NativePtr == null; }
+                unsafe { nullPtr = payload.IsNull; }
 
                 var targetNode = node;
                 if (!nullPtr && payload.IsDelivery() && Dragged != null)
@@ -280,7 +280,7 @@ namespace Macrology
         {
             var contents = macro.Contents;
             ImGui.PushItemWidth(-1f);
-            if (ImGui.InputTextMultiline($"##{macro.Id}-editor", ref contents, (uint)Plugin.Config.MaxLength, new Vector2(0, 250)))
+            if (ImGui.InputTextMultiline($"##{macro.Id}-editor", ref contents, Plugin.Config.MaxLength, new Vector2(0, 250), ImGuiInputTextFlags.None, null))
             {
                 macro.Contents = contents;
                 Plugin.Config.Save();
