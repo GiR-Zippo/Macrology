@@ -1,9 +1,12 @@
-﻿using Dalamud.Interface;
-using Dalamud.Bindings.ImGui;
+﻿using Dalamud.Bindings.ImGui;
+using Dalamud.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Reflection.Emit;
+using static Dalamud.Bindings.ImGui.ImGui;
+using static FFXIVClientStructs.FFXIV.Client.Graphics.Render.ModelRenderer;
 
 namespace Macrology
 {
@@ -278,9 +281,9 @@ namespace Macrology
 
         private void DrawMacro(Macro macro)
         {
-            var contents = macro.Contents;
+            string contents = macro.Contents;
             ImGui.PushItemWidth(-1f);
-            if (ImGui.InputTextMultiline($"##{macro.Id}-editor", ref contents, Plugin.Config.MaxLength, new Vector2(0, 250), ImGuiInputTextFlags.None, null))
+            if (ImGui.InputTextMultiline((ImU8String)$"##{macro.Id}-editor", ref contents, Plugin.Config.MaxLength, new Vector2(0, 250), ImGuiInputTextFlags.None))
             {
                 macro.Contents = contents;
                 Plugin.Config.Save();
