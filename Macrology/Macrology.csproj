@@ -1,16 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net9.0-windows7.0</TargetFramework>
+    <TargetFramework>net10.0-windows7.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <Platforms>x64</Platforms>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
-
+    <UseWpf>true</UseWpf>
     <Description>Adds a better macro system to the game.</Description>
     <PackageProjectUrl>https://git.anna.lgbt/anna/Macrology</PackageProjectUrl>
-    <Version>1.0.3.0</Version>
+    <Version>1.0.4.0</Version>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -19,17 +19,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DalamudPackager" Version="13.1.0" />
+    <PackageReference Include="DalamudPackager" Version="14.0.0" />
     <PackageReference Include="Fody" Version="6.9.3" PrivateAssets="all" />
     <PackageReference Include="H.Formatters" Version="15.0.0" />
     <PackageReference Include="H.Formatters.Newtonsoft.Json" Version="15.0.0" />
     <PackageReference Include="H.Pipes" Version="15.0.0" />
     <PackageReference Include="H.Pipes.AccessControl" Version="15.0.0" />
-    <PackageReference Include="JetBrains.Annotations" Version="2025.2.2" />
+    <PackageReference Include="JetBrains.Annotations" Version="2025.2.4" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="Resourcer.Fody" Version="1.8.1" PrivateAssets="all" />
-    <PackageReference Include="System.Text.Encoding.CodePages" Version="9.0.10" />
-    <PackageReference Include="TinyIpc" Version="5.1.0" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="10.0.1" />
+    <PackageReference Include="TinyIpc" Version="5.2.0" />
     <PackageReference Include="XivCommon" Version="9.0.0" />
   </ItemGroup>
 
