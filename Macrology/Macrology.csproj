@@ -10,7 +10,7 @@
     <UseWpf>true</UseWpf>
     <Description>Adds a better macro system to the game.</Description>
     <PackageProjectUrl>https://git.anna.lgbt/anna/Macrology</PackageProjectUrl>
-    <Version>1.0.4.0</Version>
+    <Version>1.0.4.1</Version>
   </PropertyGroup>
 
   <PropertyGroup>
